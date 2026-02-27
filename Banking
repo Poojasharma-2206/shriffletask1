@@ -1,0 +1,137 @@
+loop do
+  puts "--- Main Menu ---"
+
+  puts "1. register"
+  puts "2. login"
+  puts "3. Banking Operations (After Login):"
+  puts "4. Exit"
+
+
+  print " Enter number"
+  
+  choice = gets.to_i
+
+  case choice
+  when 1
+    puts "Enter your name"
+    name = gets.chomp
+
+    # puts "Enter email"
+    # email = gets.chomp
+
+   def validate_email(email)
+    regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+    !!email.match(regex)
+    end
+
+    # Example usage:
+    puts "Enter email"
+    email = gets.chomp
+    if validate_email(email)
+        puts "Valid email"
+    else
+        puts "Invalid email"
+        break
+    end
+
+    puts "Enter password"
+    password = gets.chomp
+
+    if (password.length > 0 && password.length == 6)
+        puts "password accepted"
+        
+    else
+        puts "length should be 6 character"
+        break
+    end
+
+    puts "Enter password for confirmation"
+    confirm_password = gets.chomp
+
+    if(password == confirm_password && password.length ==  confirm_password.length )
+
+        puts "password confirmed"
+
+    else
+        puts "password is wrong"
+
+    end
+   
+    break
+
+  when 2
+    puts "Enter email"
+    email = gets.chomp
+
+    puts "Enter password for login"
+    password = gets.chomp
+
+    break
+
+  when 3
+    puts "see operation after login"
+    puts "1. Deposit Money"
+    puts "2. Withdraw Money"
+    puts "3. Check Balance"
+    puts "4. View Account Details"
+    puts "5. Transaction History"
+    puts "6. Change Password"
+    puts "7. Account Statement(Date-wise)"
+    puts "8. Logout: Exit the banking menu and return to the main men"
+
+    puts "enter the number"
+     choice = gets.chomp
+
+  case choice
+  when "1"
+  puts "Enter your 1"
+    name = gets.chomp
+    break
+
+
+    when "2"
+  puts "Enter your 2"
+    name = gets.chomp
+    break
+
+
+    when "3"
+  puts "Enter your 3"
+    name = gets.chomp
+    break
+
+
+    when "4"
+  puts "Enter your 4"
+    name = gets.chomp
+    break
+
+
+    when "5"
+  puts "Enter your 5"
+    name = gets.chomp
+    break
+
+    when "6"
+  puts "Enter your 6"
+    name = gets.chomp
+    break
+
+    when "7"
+  puts "Enter your 7"
+    name = gets.chomp
+    break
+
+  end
+
+     when 4
+      puts "Exiting program. Goodbye!"
+    break
+
+break
+
+  else
+    puts "Invalid choice, please try again."
+  end
+
+end
