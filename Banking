@@ -1,0 +1,259 @@
+module Validity
+  def validate_email(email)
+    regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+
+    if !email.match(regex)
+      raise "Invalid email format"
+    end
+  end
+
+  def validate_password(password, confirm)
+    if password != confirm 
+      raise "password not match"
+    end
+
+    if password.length > 0 
+      return true
+    else
+      raise "length should be 6"
+    end
+  end
+
+  def validate_amount(amount)
+    if amount <= 0
+      raise "Amount is 0"
+    end
+  end
+end
+
+class Bank
+  include Validity
+end
+
+b = Bank.new
+
+Users = []
+login = nil
+current = nil
+balance = 0
+
+
+
+loop do
+  puts "--- Main Menu ---"
+
+  puts "1. register"
+  puts "2. login"
+  puts "3. Banking Operations (After Login):"
+  puts "4. Exit"
+
+  print " Enter number"
+  choice = gets.to_i
+
+  case choice
+  when 1
+    begin
+      puts "Enter your name"
+      name = gets.chomp
+      puts "Enter email"
+      email = gets.chomp
+      b.validate_email(email)
+      puts "Enter password"
+      password = gets.chomp
+      puts "Enter password for confirmation"
+      confirm = gets.chomp
+      b.validate_password(password, confirm)
+
+      Users[Users.length] = [name, email, password, 0, []]
+
+      puts "registration complete"
+    rescue => e
+      puts e.message
+    end
+
+
+  when 2
+    puts "Enter email fro login"
+    email = gets.chomp
+    puts "Enter password for login"
+    password = gets.chomp
+    
+    got = 0
+    Users.each do |user|
+      if user[1] == email && user[2] == password
+       
+        current = user
+        login = 1
+        got = 1
+        break
+      end
+    end
+
+    if got == 1
+      # puts "welcome #{current[0]}"
+       puts "Login successful!"
+    else
+      puts "login failed"
+    end
+
+
+  when 3
+
+    if login == nil
+      puts "login not complete"
+      next
+    end
+    
+    while login
+
+    puts "see operation after login"
+    puts "1. Deposit Money"
+    puts "2. Withdraw Money"
+    puts "3. Check Balance"
+    puts "4. View Account Details"
+    puts "5. Change Password"
+    puts "6. Transaction History"
+    puts "7. Account Statement(Date-wise)"
+    puts "8. Logout: Exit the banking menu and return to the main men"
+
+    puts "enter the number"
+    choice = gets.chomp
+
+    case choice
+    when "1"
+      
+     begin
+      puts "Enter amount for deposite"
+      amount = gets.to_i
+      b.validate_amount(amount)
+      current[3] = current[3] + amount
+
+      current[4] << {
+        date: Time.now,
+        # type: "deposit",
+        # amount: amount
+      }
+
+
+      puts "deposite successful of #{amount}"
+      puts "new balance become"
+      puts current[3]
+
+     rescue =>  e 
+      puts e.message
+     end
+
+    when "2"
+    begin
+      puts "Enter amount for withdrawl"
+      amount = gets.to_i
+
+      b.validate_amount(amount)
+
+      if amount <= current[3]
+        current[3] = current[3] - amount
+
+        current[4] << {
+        date: Time.now
+      }
+
+        puts "withdrawl success of amount #{amount}"
+        puts "amount after withdrawl"
+        puts current[3]
+
+      else
+        puts "balance is not sufficient, please check balance"
+        
+      end
+
+    rescue => e 
+      puts e.message
+    end
+      
+    when "3"
+     begin
+        puts "check balance "
+      puts current[3]
+     rescue => e
+      puts e.message
+     end
+     
+    when "4" 
+      begin
+      puts "Name: #{current[0]}"
+      puts "Email: #{current[1]}"
+      puts "Balance: #{current[3]}"
+
+      rescue => e
+        puts e.message
+      end
+    
+    when "5"
+       begin
+        puts "change password"
+        puts "Enter new password"
+        newpassword = gets.chomp
+
+        puts "confirm password"
+        confirmpassword = gets.chomp
+        b.validate_password(newpassword, confirmpassword)
+
+        current[2] = newpassword
+        puts "password changed"
+      rescue => e
+        puts e.message   
+     end
+     
+    when "6"
+      puts "Transection history"
+      
+      if current[4].empty? 
+          puts "no transaction"
+          else
+          current[4].each do |time|
+          puts "on date: #{time[:date]}"
+        end
+      end
+
+         when "7"
+       puts "Enter date in fomate (yyyy-mm-dd)"
+      date = gets.chomp
+
+      find = false
+
+      current[4].each do |time|
+        if time[:date].strftime("%Y-%m-%d") == date
+          puts "on date: #{time[:date]}"
+          find = true
+        else
+           puts "no transaction on this date try again"
+        end   
+      end
+       when "8"
+        login = nil
+        current = nil
+        puts "Logged out successfully."
+        break 
+
+      else
+        puts "Invalid choice."
+      end
+
+    end 
+
+  when 4
+    puts "Exiting program"
+    break  
+
+  else
+    puts "Invalid choice."
+  end
+
+end
+# Users = []
+# name = gets.chomp
+# email = gets.chomp
+# length = gets.chomp
+
+# Users[Users.length] = [name, email, length]
+# puts Users
