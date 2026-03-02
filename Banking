@@ -1,4 +1,13 @@
 module Validity
+
+  def validate_name(name)
+    name_regex = "^[A-Za-z]+(['-]A-Za-z )*"
+
+    if !name.match(name_regex)
+      raise "Invalid name format"
+    end   
+  end
+  
   def validate_email(email)
     regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
 
@@ -7,21 +16,23 @@ module Validity
     end
   end
 
+  def validate_pass(password)
+     pass_regex = /^[([a-z]|[A-Z])0-9_-]{6,40}$/
+
+    if !password.match(pass_regex)
+      raise "must be at least 6 characters and include one number and one letter."
+    end
+  end
+
   def validate_password(password, confirm)
     if password != confirm 
       raise "password not match"
-    end
-
-    if password.length > 0 
-      return true
-    else
-      raise "length should be 6"
     end
   end
 
   def validate_amount(amount)
     if amount <= 0
-      raise "Amount is 0"
+      raise "withdrawl amount must be positive"
     end
   end
 end
@@ -35,9 +46,6 @@ b = Bank.new
 Users = []
 login = nil
 current = nil
-balance = 0
-
-
 
 loop do
   puts "--- Main Menu ---"
@@ -55,11 +63,16 @@ loop do
     begin
       puts "Enter your name"
       name = gets.chomp
+      b.validate_name(name)
+
       puts "Enter email"
       email = gets.chomp
       b.validate_email(email)
+
       puts "Enter password"
       password = gets.chomp
+      b.validate_pass(password)
+
       puts "Enter password for confirmation"
       confirm = gets.chomp
       b.validate_password(password, confirm)
@@ -73,7 +86,7 @@ loop do
 
 
   when 2
-    puts "Enter email fro login"
+    puts "Enter email for login"
     email = gets.chomp
     puts "Enter password for login"
     password = gets.chomp
@@ -90,8 +103,7 @@ loop do
     end
 
     if got == 1
-      # puts "welcome #{current[0]}"
-       puts "Login successful!"
+       puts "Login successful"
     else
       puts "login failed"
     end
@@ -114,29 +126,26 @@ loop do
     puts "5. Change Password"
     puts "6. Transaction History"
     puts "7. Account Statement(Date-wise)"
-    puts "8. Logout: Exit the banking menu and return to the main men"
+    puts "8. Logout: Exit the banking menu"
 
-    puts "enter the number"
+    puts "Enter the number"
     choice = gets.chomp
 
     case choice
     when "1"
       
      begin
-      puts "Enter amount for deposite"
+      puts "Enter amount for deposit"
       amount = gets.to_i
       b.validate_amount(amount)
       current[3] = current[3] + amount
 
       current[4] << {
-        date: Time.now,
-        # type: "deposit",
-        # amount: amount
+        date: Time.now
       }
 
-
-      puts "deposite successful of #{amount}"
-      puts "new balance become"
+      puts "Deposit successful of #{amount}"
+      puts "New balance become"
       puts current[3]
 
      rescue =>  e 
@@ -145,7 +154,7 @@ loop do
 
     when "2"
     begin
-      puts "Enter amount for withdrawl"
+      puts "Enter amount for withdraw"
       amount = gets.to_i
 
       b.validate_amount(amount)
@@ -157,12 +166,12 @@ loop do
         date: Time.now
       }
 
-        puts "withdrawl success of amount #{amount}"
-        puts "amount after withdrawl"
+        puts "Withdrawl success of amount #{amount}"
+        puts "Amount after withdrawl"
         puts current[3]
 
       else
-        puts "balance is not sufficient, please check balance"
+        puts "Balance is not sufficient, please check balance"
         
       end
 
@@ -172,7 +181,7 @@ loop do
       
     when "3"
      begin
-        puts "check balance "
+        puts "Check Balance"
       puts current[3]
      rescue => e
       puts e.message
@@ -190,11 +199,11 @@ loop do
     
     when "5"
        begin
-        puts "change password"
+        puts "Change password"
         puts "Enter new password"
         newpassword = gets.chomp
 
-        puts "confirm password"
+        puts "Confirm password"
         confirmpassword = gets.chomp
         b.validate_password(newpassword, confirmpassword)
 
@@ -208,15 +217,15 @@ loop do
       puts "Transection history"
       
       if current[4].empty? 
-          puts "no transaction"
+          puts "No transaction"
           else
           current[4].each do |time|
           puts "on date: #{time[:date]}"
         end
       end
 
-         when "7"
-       puts "Enter date in fomate (yyyy-mm-dd)"
+      when "7"
+      puts "Enter date in format (yyyy-mm-dd)"
       date = gets.chomp
 
       find = false
@@ -250,10 +259,3 @@ loop do
   end
 
 end
-# Users = []
-# name = gets.chomp
-# email = gets.chomp
-# length = gets.chomp
-
-# Users[Users.length] = [name, email, length]
-# puts Users
